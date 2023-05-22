@@ -1,26 +1,62 @@
 #!/bin/bash
 
-echo "Bom dia, qual o seu nome?"
-read name
-if [ $name==Daniella ]; then
-	echo "Oi, professora!"
-fi
-echo "Qual foi sua média?"
-read media
-for i in `seq 1 10`
-do
-	clear
-	echo "Carregando $i/10"
-done
+# usado para criar uma barra de loading
+bar() 
+{
+	bar='####################'
+	for i in {1..20}; do
+	    echo -ne "\r$1... ${bar:0:$i}"
+	    sleep .15                 
+	done
+}
+
+# limpa a tela e pergunta o nome
 clear
-echo "A situação do aluno $nome com média de $media é"
-if [ media -lt 40 ]; then
-	echo "Reprovado"
-elif [ media -lt 70 ]; then
-	echo "Recuperação"
+echo "Bom dia! Qual o seu nome?"
+
+# ler o nome
+read name
+clear
+
+# se for a senhora dá um 'oi' diferente
+if [ $name = Daniella ] || [ $name = daniella ]; then
+	echo "Olá, professora!"
 else
-	echo "Aprovado"
+	echo "Olá, $name!"
 fi
-if [ media -eq 100 ]; then
+
+# ler a média do aluno
+echo "Qual sua média? "
+read media
+
+# mostra a barra de carregamento
+echo ""
+bar Calculando
+echo ""
+echo ""
+
+if [ $media -lt 40 ]; then
+	# informar que o aluno está reprovado caso a média seja menor que 40
+	echo "Você está Reprovado. Não têm direito a final."
+elif [ $media -lt 70 ]; then
+
+	# calculo de quanto precisa na final
+	v1=$((500 - (6 * $media)))
+	v2=`echo "scale=1;$v1/4" | bc`
+	v3=`echo "$v2+0.5" | bc`
+	precisa=`echo -n ${v3:0:2}`
+
+	# mostrar na tela o resultado
+	echo "Você têm direito à Avaliação Final, precisando de $precisa pontos!"
+
+else
+	# dizer que está aprovado
+	echo "Você está Aprovado!"
+fi
+
+# parabenizar se o aluno conseguir nota 100
+if [ $media -eq 100 ]; then
 	echo "Parabéns!"
 fi
+
+exit 0
